@@ -30,6 +30,10 @@ out/
 .env.*
 !.env.example
 application-secret.yml
+application-local.yml
+application-prod.yml
+*.pem
+*.key
 
 ### OS ###
 .DS_Store
