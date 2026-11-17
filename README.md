@@ -1,7 +1,6 @@
 # Roomora Server (`roomora-server`)
 
 > **Roomora (루모라)** — 조건 기반 인테리어 레시피 · 주간 콘테스트 · AI RAG 통합 검색 플랫폼의 백엔드 서버입니다.  
-> 학부 캡스톤 레거시(`The-Aesthetics-Of-Space-Project`)의 보안·성능·인프라 결함을 진단하고 전면 재설계한 v2 프로젝트입니다.
 
 ## 기술 스택
 - **Language & Framework**: Java 17+, Spring Boot 3.x, Spring Security (JWT + OAuth2 Kakao/Google)
