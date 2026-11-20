@@ -21,7 +21,13 @@ public enum ErrorCode {
     REFRESH_TOKEN_REUSE_DETECTED(HttpStatus.UNAUTHORIZED, "A006", "비정상적인 토큰 재사용이 감지되어 모든 세션이 만료되었습니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "A007", "접근 권한이 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A008", "사용자를 찾을 수 없습니다."),
-    SOCIAL_USER_PASSWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A009", "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다.");
+    SOCIAL_USER_PASSWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A009", "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다."),
+
+    // Recipe & Community
+    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "레시피를 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "R002", "댓글을 찾을 수 없습니다."),
+    INVALID_COMMENT_DEPTH(HttpStatus.BAD_REQUEST, "R003", "대댓글에는 답글을 작성할 수 없습니다."),
+    INVALID_UPLOAD_REQUEST(HttpStatus.BAD_REQUEST, "R004", "허용되지 않는 파일 형식입니다.");
 
     private final HttpStatus status;
     private final String code;
