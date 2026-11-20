@@ -27,7 +27,15 @@ public enum ErrorCode {
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "레시피를 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "R002", "댓글을 찾을 수 없습니다."),
     INVALID_COMMENT_DEPTH(HttpStatus.BAD_REQUEST, "R003", "대댓글에는 답글을 작성할 수 없습니다."),
-    INVALID_UPLOAD_REQUEST(HttpStatus.BAD_REQUEST, "R004", "허용되지 않는 파일 형식입니다.");
+    INVALID_UPLOAD_REQUEST(HttpStatus.BAD_REQUEST, "R004", "허용되지 않는 파일 형식입니다."),
+
+    // Contest & Ranking
+    CONTEST_ROUND_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "콘테스트 회차를 찾을 수 없습니다."),
+    CONTEST_ROUND_NOT_ACTIVE(HttpStatus.BAD_REQUEST, "N002", "진행 중인 콘테스트 회차가 아닙니다."),
+    CONTEST_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "N003", "콘테스트 출품작을 찾을 수 없습니다."),
+    DUPLICATE_CONTEST_SUBMISSION(HttpStatus.CONFLICT, "N004", "해당 회차에 이미 출품작을 등록했습니다."),
+    ALREADY_VOTED_IN_ROUND(HttpStatus.CONFLICT, "N005", "이번 회차에 이미 투표했습니다."),
+    SELF_VOTE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "N006", "본인 출품작에는 투표할 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -66,7 +66,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/api/recipes",
                                 "/api/recipes/*" ,
-                                "/api/recipes/*/comments"
+                                "/api/recipes/*/comments",
+                                "/api/contests/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
