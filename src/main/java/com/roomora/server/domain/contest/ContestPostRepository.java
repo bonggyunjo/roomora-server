@@ -1,5 +1,7 @@
 package com.roomora.server.domain.contest;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +13,8 @@ import java.util.Optional;
 public interface ContestPostRepository extends JpaRepository<ContestPost, Long> {
 
     Optional<ContestPost> findByIdAndDeletedAtIsNull(Long id);
+
+    Page<ContestPost> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     boolean existsByRoundIdAndUserIdAndDeletedAtIsNull(Long roundId, Long userId);
 

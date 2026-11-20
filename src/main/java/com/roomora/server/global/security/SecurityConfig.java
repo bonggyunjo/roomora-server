@@ -63,11 +63,15 @@ public class SecurityConfig {
                                 "/login/oauth2/**",
                                 "/actuator/health"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/recipes",
                                 "/api/recipes/*" ,
                                 "/api/recipes/*/comments",
-                                "/api/contests/**"
+                                "/api/contests/**",
+                                "/api/users/*",
+                                "/api/users/*/followers",
+                                "/api/users/*/followings"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/search/rag").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

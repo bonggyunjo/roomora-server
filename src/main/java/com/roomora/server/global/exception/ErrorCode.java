@@ -41,7 +41,10 @@ public enum ErrorCode {
     GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "G001", "인테리어 가이드를 찾을 수 없습니다."),
     RAG_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "G002", "일일 AI 검색 횟수를 초과했습니다. 일반 조건 검색(/api/recipes)을 이용해 주세요."),
     CHECKLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "K001", "체크리스트를 찾을 수 없습니다."),
-    CHECKLIST_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "K002", "체크리스트 항목을 찾을 수 없습니다.");
+    CHECKLIST_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "K002", "체크리스트 항목을 찾을 수 없습니다."),
+
+    // MyPage & Social
+    SELF_FOLLOW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "U001", "자기 자신을 팔로우할 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -85,6 +85,19 @@ public class User {
         this.updatedAt = Instant.now();
     }
 
+    public void updateProfile(String nickname, String profileImageUrl, String bio) {
+        if (nickname != null && !nickname.isBlank()) {
+            this.nickname = nickname;
+        }
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
+        }
+        if (bio != null) {
+            this.bio = bio;
+        }
+        this.updatedAt = Instant.now();
+    }
+
     public void softDelete() {
         this.deletedAt = Instant.now();
         this.updatedAt = this.deletedAt;

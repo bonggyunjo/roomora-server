@@ -1,5 +1,7 @@
 package com.roomora.server.domain.recipe;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +13,8 @@ import java.util.Optional;
 public interface RecipePostRepository extends JpaRepository<RecipePost, Long>, JpaSpecificationExecutor<RecipePost> {
 
     Optional<RecipePost> findByIdAndDeletedAtIsNull(Long id);
+
+    Page<RecipePost> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE RecipePost r SET r.likeCount = r.likeCount + 1 WHERE r.id = :id")
