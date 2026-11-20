@@ -69,6 +69,8 @@ public class SecurityConfig {
                                 "/api/recipes/*/comments",
                                 "/api/contests/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/search/rag").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth

@@ -57,6 +57,23 @@ jwt:
 app:
   oauth2:
     redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:3000/auth/callback}
+  ai:
+    api-key: ${AI_API_KEY:}
+    base-url: ${AI_BASE_URL:https://api.openai.com/v1}
+    chat-model: ${AI_CHAT_MODEL:gpt-4o-mini}
+    embedding-model: ${AI_EMBEDDING_MODEL:text-embedding-3-small}
+    daily-limit: ${RAG_DAILY_LIMIT:20}
+    cache-ttl-minutes: ${RAG_CACHE_TTL_MINUTES:30}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:8}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ragAi:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
 
 server:
   port: ${SERVER_PORT:8080}

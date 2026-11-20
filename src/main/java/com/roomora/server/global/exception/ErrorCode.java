@@ -35,7 +35,13 @@ public enum ErrorCode {
     CONTEST_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "N003", "콘테스트 출품작을 찾을 수 없습니다."),
     DUPLICATE_CONTEST_SUBMISSION(HttpStatus.CONFLICT, "N004", "해당 회차에 이미 출품작을 등록했습니다."),
     ALREADY_VOTED_IN_ROUND(HttpStatus.CONFLICT, "N005", "이번 회차에 이미 투표했습니다."),
-    SELF_VOTE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "N006", "본인 출품작에는 투표할 수 없습니다.");
+    SELF_VOTE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "N006", "본인 출품작에는 투표할 수 없습니다."),
+
+    // AI RAG & Checklist
+    GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "G001", "인테리어 가이드를 찾을 수 없습니다."),
+    RAG_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "G002", "일일 AI 검색 횟수를 초과했습니다. 일반 조건 검색(/api/recipes)을 이용해 주세요."),
+    CHECKLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "K001", "체크리스트를 찾을 수 없습니다."),
+    CHECKLIST_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "K002", "체크리스트 항목을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
