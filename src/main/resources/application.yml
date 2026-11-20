@@ -55,6 +55,8 @@ jwt:
   refresh-expiration-ms: ${JWT_REFRESH_EXP_MS:1209600000}
 
 app:
+  seed:
+    enabled: ${APP_SEED_ENABLED:true}
   oauth2:
     redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:3000/auth/callback}
   ai:
