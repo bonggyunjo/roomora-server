@@ -1,8 +1,9 @@
 package com.roomora.server.domain.rag;
 
+import com.roomora.server.domain.contest.ContestPost;
+import com.roomora.server.domain.contest.ContestPostRepository;
 import com.roomora.server.domain.guide.InteriorGuide;
 import com.roomora.server.domain.guide.InteriorGuideRepository;
-import com.roomora.server.domain.recipe.RecipeItem;
 import com.roomora.server.domain.recipe.RecipePost;
 import com.roomora.server.domain.recipe.RecipePostRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class RagIndexingService {
 
     private final RecipePostRepository recipePostRepository;
     private final InteriorGuideRepository guideRepository;
+    private final ContestPostRepository contestPostRepository;
     private final RagDocumentChunkRepository chunkRepository;
     private final RagChunker chunker;
     private final RagEmbeddingClient embeddingClient;
@@ -50,6 +52,19 @@ public class RagIndexingService {
         indexPayloadOutsideTx(RagSourceType.GUIDE, guideId, payload);
     }
 
+    public void indexContestPost(Long postId) {
+        IndexPayload payload = loadContestPayload(postId);
+        if (payload == null) {
+            deleteSource(RagSourceType.CONTEST, postId);
+            return;
+        }
+        indexPayloadOutsideTx(RagSourceType.CONTEST, postId, payload);
+    }
+
+    public void deleteContestPost(Long postId) {
+        deleteSource(RagSourceType.CONTEST, postId);
+    }
+
     public int reindexAllGuidesAndRecipes() {
         List<Long> recipeIds = transactionTemplate.execute(status ->
                 recipePostRepository.findAll().stream()
@@ -59,6 +74,11 @@ public class RagIndexingService {
         List<Long> guideIds = transactionTemplate.execute(status ->
                 guideRepository.findAll().stream()
                         .map(InteriorGuide::getId)
+                        .toList());
+        List<Long> contestIds = transactionTemplate.execute(status ->
+                contestPostRepository.findAll().stream()
+                        .filter(c -> c.getDeletedAt() == null)
+                        .map(ContestPost::getId)
                         .toList());
 
         int count = 0;
@@ -71,6 +91,12 @@ public class RagIndexingService {
         if (guideIds != null) {
             for (Long id : guideIds) {
                 indexGuide(id);
+                count++;
+            }
+        }
+        if (contestIds != null) {
+            for (Long id : contestIds) {
+                indexContestPost(id);
                 count++;
             }
         }
@@ -125,6 +151,25 @@ public class RagIndexingService {
                 metadata.put("styleTag", guide.getStyleTag());
             }
             return new IndexPayload(prefix, guide.getTitle(), guide.getContent(), metadata);
+        });
+    }
+
+    private IndexPayload loadContestPayload(Long postId) {
+        return transactionTemplate.execute(status -> {
+            ContestPost post = contestPostRepository.findByIdAndDeletedAtIsNull(postId).orElse(null);
+            if (post == null) {
+                return null;
+            }
+            String prefix = String.format("[콘테스트 | Round %d | %s]",
+                    post.getRound().getRoundNo(),
+                    post.getRound().getTitle());
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("title", post.getTitle());
+            metadata.put("roundNo", post.getRound().getRoundNo());
+            if (post.getThumbnailUrl() != null) {
+                metadata.put("thumbnailUrl", post.getThumbnailUrl());
+            }
+            return new IndexPayload(prefix, post.getTitle(), post.getContent(), metadata);
         });
     }
 

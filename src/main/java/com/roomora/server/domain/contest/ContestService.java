@@ -2,6 +2,7 @@ package com.roomora.server.domain.contest;
 
 import com.roomora.server.domain.contest.ContestRankingRedisRepository.RankedEntry;
 import com.roomora.server.domain.contest.dto.ContestDtos.*;
+import com.roomora.server.domain.rag.RagIndexingService;
 import com.roomora.server.domain.user.User;
 import com.roomora.server.domain.user.UserRepository;
 import com.roomora.server.global.exception.BusinessException;
@@ -31,6 +32,7 @@ public class ContestService {
     private final ContestScrapRepository scrapRepository;
     private final ContestRankingRedisRepository rankingRedisRepository;
     private final UserRepository userRepository;
+    private final RagIndexingService ragIndexingService;
 
     public RoundResponse getActiveRound() {
         ContestRound round = roundRepository.findFirstByStatusOrderByRoundNoDesc(ContestRoundStatus.ACTIVE)
@@ -114,7 +116,10 @@ public class ContestService {
 
         try {
             ContestPost saved = postRepository.saveAndFlush(post);
-            registerAfterCommit(() -> rankingRedisRepository.initializeEntry(roundId, saved.getId()));
+            registerAfterCommit(() -> {
+                rankingRedisRepository.initializeEntry(roundId, saved.getId());
+                ragIndexingService.indexContestPost(saved.getId());
+            });
             return toDetailResponse(saved, false, false);
         } catch (DataIntegrityViolationException ex) {
             throw new BusinessException(ErrorCode.DUPLICATE_CONTEST_SUBMISSION);
@@ -139,6 +144,7 @@ public class ContestService {
         }
         post.update(request.title(), request.content(), request.thumbnailUrl());
         post.replaceImages(request.images());
+        registerAfterCommit(() -> ragIndexingService.indexContestPost(post.getId()));
         boolean voted = voteRepository.existsByRoundIdAndUserId(post.getRound().getId(), userId);
         boolean scrapped = scrapRepository.existsByContestPostIdAndUserId(postId, userId);
         return toDetailResponse(post, voted, scrapped);
@@ -152,7 +158,10 @@ public class ContestService {
         }
         post.softDelete();
         Long roundId = post.getRound().getId();
-        registerAfterCommit(() -> rankingRedisRepository.removeEntry(roundId, postId));
+        registerAfterCommit(() -> {
+            rankingRedisRepository.removeEntry(roundId, postId);
+            ragIndexingService.deleteContestPost(postId);
+        });
     }
 
     @Transactional

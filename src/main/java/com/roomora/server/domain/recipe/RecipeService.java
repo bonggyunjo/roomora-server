@@ -64,8 +64,11 @@ public class RecipeService {
     public RecipePageResponse list(RecipeSearchCondition cond) {
         int pageSize = (cond.size() != null && cond.size() > 0 && cond.size() <= 50) ? cond.size() : 20;
         RecipeSortType sortType = cond.sort() != null ? cond.sort() : RecipeSortType.LATEST;
+        RecipePost cursorPost = cond.lastId() != null
+                ? recipePostRepository.findByIdAndDeletedAtIsNull(cond.lastId()).orElse(null)
+                : null;
 
-        Specification<RecipePost> spec = buildFilterSpec(cond, sortType);
+        Specification<RecipePost> spec = buildFilterSpec(cond, sortType, cursorPost);
         Sort sort = toSort(sortType);
         List<RecipePost> fetched = recipePostRepository.findAll(spec, PageRequest.of(0, pageSize + 1, sort)).getContent();
 
@@ -188,7 +191,7 @@ public class RecipeService {
                 .toList();
     }
 
-    private Specification<RecipePost> buildFilterSpec(RecipeSearchCondition cond, RecipeSortType sortType) {
+    private Specification<RecipePost> buildFilterSpec(RecipeSearchCondition cond, RecipeSortType sortType, RecipePost cursorPost) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.isNull(root.get("deletedAt")));
@@ -211,8 +214,35 @@ public class RecipeService {
             if (cond.styleTag() != null) {
                 predicates.add(cb.equal(root.get("styleTag"), cond.styleTag()));
             }
-            if (cond.lastId() != null && sortType == RecipeSortType.LATEST) {
-                predicates.add(cb.lessThan(root.get("id"), cond.lastId()));
+            if (cond.lastId() != null) {
+                if (sortType == RecipeSortType.LATEST || cursorPost == null) {
+                    predicates.add(cb.lessThan(root.get("id"), cond.lastId()));
+                } else {
+                    switch (sortType) {
+                        case LIKES -> predicates.add(cb.or(
+                                cb.lessThan(root.get("likeCount"), cursorPost.getLikeCount()),
+                                cb.and(
+                                        cb.equal(root.get("likeCount"), cursorPost.getLikeCount()),
+                                        cb.lessThan(root.get("id"), cond.lastId())
+                                )
+                        ));
+                        case SCRAPS -> predicates.add(cb.or(
+                                cb.lessThan(root.get("scrapCount"), cursorPost.getScrapCount()),
+                                cb.and(
+                                        cb.equal(root.get("scrapCount"), cursorPost.getScrapCount()),
+                                        cb.lessThan(root.get("id"), cond.lastId())
+                                )
+                        ));
+                        case BUDGET_ASC -> predicates.add(cb.or(
+                                cb.greaterThan(root.get("budget"), cursorPost.getBudget()),
+                                cb.and(
+                                        cb.equal(root.get("budget"), cursorPost.getBudget()),
+                                        cb.lessThan(root.get("id"), cond.lastId())
+                                )
+                        ));
+                        default -> predicates.add(cb.lessThan(root.get("id"), cond.lastId()));
+                    }
+                }
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };

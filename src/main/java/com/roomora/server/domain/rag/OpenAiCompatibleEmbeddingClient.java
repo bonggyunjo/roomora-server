@@ -1,6 +1,7 @@
 package com.roomora.server.domain.rag;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -14,6 +15,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class OpenAiCompatibleEmbeddingClient implements RagEmbeddingClient {
 
@@ -49,24 +51,29 @@ public class OpenAiCompatibleEmbeddingClient implements RagEmbeddingClient {
                 "dimensions", VECTOR_DIMENSION
         );
 
-        JsonNode response = restClient.post()
-                .uri("/embeddings")
-                .header("Authorization", "Bearer " + apiKey)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
-                .retrieve()
-                .body(JsonNode.class);
+        try {
+            JsonNode response = restClient.post()
+                    .uri("/embeddings")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .body(JsonNode.class);
 
-        if (response == null || !response.has("data") || response.get("data").isEmpty()) {
-            throw new IllegalStateException("Empty embedding response from AI provider");
+            if (response == null || !response.has("data") || response.get("data").isEmpty()) {
+                throw new IllegalStateException("Empty embedding response from AI provider");
+            }
+            JsonNode vecNode = response.get("data").get(0).get("embedding");
+            float[] result = new float[VECTOR_DIMENSION];
+            int limit = Math.min(vecNode.size(), VECTOR_DIMENSION);
+            for (int i = 0; i < limit; i++) {
+                result[i] = (float) vecNode.get(i).asDouble();
+            }
+            return result;
+        } catch (Exception ex) {
+            log.warn("Embedding provider failed ({}), falling back to deterministic local vector.", ex.getMessage());
+            return deterministicLocalVector(text);
         }
-        JsonNode vecNode = response.get("data").get(0).get("embedding");
-        float[] result = new float[VECTOR_DIMENSION];
-        int limit = Math.min(vecNode.size(), VECTOR_DIMENSION);
-        for (int i = 0; i < limit; i++) {
-            result[i] = (float) vecNode.get(i).asDouble();
-        }
-        return result;
     }
 
     /**
