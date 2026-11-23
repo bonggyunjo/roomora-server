@@ -45,7 +45,8 @@ public class OpenAiCompatibleEmbeddingClient implements RagEmbeddingClient {
 
         Map<String, Object> body = Map.of(
                 "model", embeddingModel,
-                "input", text
+                "input", text,
+                "dimensions", VECTOR_DIMENSION
         );
 
         JsonNode response = restClient.post()
