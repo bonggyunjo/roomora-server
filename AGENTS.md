@@ -10,15 +10,21 @@ layer: L0
 - **역할**: Spring Boot 3.x 기반 REST API, JWT/OAuth2 인증, Redis ZSET 랭킹, `pgvector` Hybrid RAG 파이프라인
 
 ## 2. 기술 스택 및 버전
-- Java 17+, Spring Boot 3.3.x, Gradle
-- PostgreSQL 16 (`pgvector`), Redis, Spring AI, Resilience4j
+- Java 17+, Spring Boot 3.3.5, Gradle
+- PostgreSQL 16 (`pgvector`, `pg_trgm`), Spring Data JPA (`Specification`), Redis, OpenAI-compatible `RestClient`, Resilience4j 2.2.0
 
 ## 3. 기준 문서 우선순위 & 라우팅 지도
 - **우선순위**: `DEC(decisions.md) > L1(system_architecture.md / erd_schema.md) > L2(*_spec.md)`
 - **외부 옵시디언 볼트**: `../dev-obsidian-base/10_Projects/roomora/`
   - 세션 시작 시: `activeContext.md` + `00_MOC/project_moc.md` 먼저 열람
-  - 기능 구현 시: `02_Specs_and_Skills/<domain>_spec.md` 열람 후 `plan.md` 작성
-  - 플레이북: `../dev-obsidian-base/30_Agent_Playbooks/` (`gate1_plan_auditor.md`, `gate2_code_reviewer.md`)
+  - 플레이북: `../dev-obsidian-base/30_Agent_Playbooks/` (`gate1_plan_auditor.md`, `qa_test_agent.md`, `gate2_code_reviewer.md`, `session_handoff_sop.md`)
+  - **도메인별 1:1 L2 스펙 라우팅**:
+    - `auth` / `security`: `../dev-obsidian-base/10_Projects/roomora/02_Specs_and_Skills/auth_oauth_spec.md`
+    - `recipe` / `upload`: `../dev-obsidian-base/10_Projects/roomora/02_Specs_and_Skills/recipe_community_spec.md`
+    - `contest`: `../dev-obsidian-base/10_Projects/roomora/02_Specs_and_Skills/contest_ranking_spec.md`
+    - `rag` / `guide`: `../dev-obsidian-base/10_Projects/roomora/02_Specs_and_Skills/rag_search_spec.md`
+    - `checklist`: `../dev-obsidian-base/10_Projects/roomora/02_Specs_and_Skills/checklist_spec.md`
+    - `mypage` / `user`: `../dev-obsidian-base/10_Projects/roomora/02_Specs_and_Skills/mypage_social_spec.md`
 
 ## 4. 빌드·테스트 명령 (Narrowest Verification)
 - 전체 빌드 대신 수정 도메인 테스트만 가장 좁게 실행한다:
