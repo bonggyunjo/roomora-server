@@ -16,23 +16,23 @@ public interface RecipePostRepository extends JpaRepository<RecipePost, Long>, J
 
     Page<RecipePost> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE RecipePost r SET r.likeCount = r.likeCount + 1 WHERE r.id = :id")
     void incrementLikeCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE RecipePost r SET r.likeCount = CASE WHEN r.likeCount > 0 THEN r.likeCount - 1 ELSE 0 END WHERE r.id = :id")
     void decrementLikeCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE RecipePost r SET r.scrapCount = r.scrapCount + 1 WHERE r.id = :id")
     void incrementScrapCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE RecipePost r SET r.scrapCount = CASE WHEN r.scrapCount > 0 THEN r.scrapCount - 1 ELSE 0 END WHERE r.id = :id")
     void decrementScrapCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE RecipePost r SET r.viewCount = r.viewCount + 1 WHERE r.id = :id")
     void incrementViewCount(@Param("id") Long id);
 }

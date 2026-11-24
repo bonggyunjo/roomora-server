@@ -22,15 +22,15 @@ public interface ContestPostRepository extends JpaRepository<ContestPost, Long> 
 
     List<ContestPost> findByRoundIdAndFinalRankIsNotNullAndDeletedAtIsNullOrderByFinalRankAsc(Long roundId);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE ContestPost c SET c.voteCount = c.voteCount + 1 WHERE c.id = :id")
     void incrementVoteCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE ContestPost c SET c.scrapCount = c.scrapCount + 1 WHERE c.id = :id")
     void incrementScrapCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE ContestPost c SET c.scrapCount = CASE WHEN c.scrapCount > 0 THEN c.scrapCount - 1 ELSE 0 END WHERE c.id = :id")
     void decrementScrapCount(@Param("id") Long id);
 }

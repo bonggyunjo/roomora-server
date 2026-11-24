@@ -19,19 +19,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByIdAndDeletedAtIsNull(Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE User u SET u.followerCount = u.followerCount + 1 WHERE u.id = :id")
     void incrementFollowerCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE User u SET u.followerCount = CASE WHEN u.followerCount > 0 THEN u.followerCount - 1 ELSE 0 END WHERE u.id = :id")
     void decrementFollowerCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE User u SET u.followingCount = u.followingCount + 1 WHERE u.id = :id")
     void incrementFollowingCount(@Param("id") Long id);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE User u SET u.followingCount = CASE WHEN u.followingCount > 0 THEN u.followingCount - 1 ELSE 0 END WHERE u.id = :id")
     void decrementFollowingCount(@Param("id") Long id);
 }
